@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://dr5tm4tjkwym2"]
+
+[ext_resource type="ArrayMesh" uid="uid://cc684nbvbs10j" path="res://Meshes/SM_StanfordBunny.obj" id="1_ah0qq"]
+[ext_resource type="Script" path="res://Scripts/OrbitCamera.gd" id="1_bbodk"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Box" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_ah0qq")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.90187, 0.247492, -0.354087, 1.01593e-08, 0.819632, 0.57289, 0.432007, -0.516672, 0.739202, -1.12957, 5.03953, 6.58823)
+fov = 60.0
+script = ExtResource("1_bbodk")
+look_at_position = null
+mouse_sensitivity = 0.5
+scroll_step = 0.2
+min_scroll = null
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.838585, -0.359035, 0.409718, 4.20576e-08, 0.752093, 0.659057, -0.544771, -0.552675, 0.630694, 3.10368, 4.61177, 5.57255)
