@@ -1,7 +1,63 @@
-[gd_scene load_steps=3 format=3 uid="uid://dr5tm4tjkwym2"]
+[gd_scene load_steps=12 format=3 uid="uid://dr5tm4tjkwym2"]
 
 [ext_resource type="ArrayMesh" uid="uid://cc684nbvbs10j" path="res://Meshes/SM_StanfordBunny.obj" id="1_ah0qq"]
 [ext_resource type="Script" path="res://Scripts/OrbitCamera.gd" id="1_bbodk"]
+[ext_resource type="Shader" path="res://Shaders/SH_NNAO_PP.gdshader" id="3_xgyh2"]
+[ext_resource type="Texture2D" uid="uid://fyk5sfart41o" path="res://Weights/nnao_f0.tga" id="4_kk2a3"]
+[ext_resource type="Texture2D" uid="uid://bfiw2da2244vs" path="res://Weights/nnao_f1.tga" id="5_j3m0m"]
+[ext_resource type="Texture2D" uid="uid://dn5vomxp66u1w" path="res://Weights/nnao_f2.tga" id="6_u5k0x"]
+[ext_resource type="Texture2D" uid="uid://di2se0vmpq2fq" path="res://Weights/nnao_f3.tga" id="7_wmgd5"]
+[ext_resource type="Shader" path="res://Shaders/SH_SSAO_PP.gdshader" id="8_oxuuo"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_a37hx"]
+flip_faces = true
+size = Vector2(2, 2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_he1gt"]
+render_priority = 0
+shader = ExtResource("3_xgyh2")
+shader_parameter/F0a = Vector4(2.36437, 2.39949, 0.889055, 4.0552)
+shader_parameter/F0b = Vector4(-1.29636, -0.926747, -0.441784, -3.30816)
+shader_parameter/F1a = Vector4(1.41812, 1.50518, 1.10531, 1.72897)
+shader_parameter/F1b = Vector4(-0.491502, -0.789398, -0.328302, -1.14107)
+shader_parameter/F2a = Vector4(1.18104, 1.29226, 2.13634, 1.61636)
+shader_parameter/F2b = Vector4(-0.535625, -0.900996, -0.405372, -1.03084)
+shader_parameter/F3a = Vector4(1.31734, 2.01283, 1.94562, 5.84138)
+shader_parameter/F3b = Vector4(-0.530946, -1.09127, -1.41304, -3.90819)
+shader_parameter/Xmean = Vector4(5.2e-05, -3e-06, -7.6e-05, 0.0046)
+shader_parameter/Xstd = Vector4(0.047157, 0.052956, 0.030938, 0.056321)
+shader_parameter/Ymean = 0.0
+shader_parameter/Ystd = 0.11618
+shader_parameter/W1 = Projection(-0.147624, -0.150471, 0.154306, -0.006904, 0.303306, 0.057305, -0.240071, 0.036727, 0.009158, -0.371759, -0.259837, 0.302215, -0.111847, -0.183312, 0.04468, -0.190296)
+shader_parameter/W2 = Projection(0.212815, 0.028991, 0.105671, -0.111834, 0.316173, -0.166099, 0.058121, -0.170316, 0.135707, -0.478362, -0.156021, -0.413203, -0.097283, 0.189983, 0.019879, -0.260882)
+shader_parameter/W3 = Vector4(0.774455, 0.778138, -0.318566, -0.523377)
+shader_parameter/b0 = Vector4(0.428451, 2.61907, 3.7567, 1.63639)
+shader_parameter/b1 = Vector4(0.56631, 1.87781, 1.31672, 1.09111)
+shader_parameter/b2 = Vector4(0.033848, 0.036487, -1.31671, -1.06726)
+shader_parameter/b3 = 0.151472
+shader_parameter/alpha0 = Vector4(0.326746, -0.380245, 0.179183, 0.104307)
+shader_parameter/alpha1 = Vector4(0.255981, 0.009228, 0.211068, 0.110055)
+shader_parameter/alpha2 = Vector4(-0.252365, 0.016463, -0.232611, 0.069798)
+shader_parameter/alpha3 = -0.55376
+shader_parameter/beta0 = Vector4(0.482399, 0.562806, 0.947146, 0.46056)
+shader_parameter/beta1 = Vector4(0.67006, 1.09048, 0.46188, 0.322837)
+shader_parameter/beta2 = Vector4(0.760696, 1.0164, 1.68699, 1.74455)
+shader_parameter/beta3 = 0.77776
+shader_parameter/radius = 1.0
+shader_parameter/cam_clip_near = 0.1
+shader_parameter/cam_clip_far = 1000.0
+shader_parameter/F0 = ExtResource("4_kk2a3")
+shader_parameter/F1 = ExtResource("5_j3m0m")
+shader_parameter/F2 = ExtResource("6_u5k0x")
+shader_parameter/F3 = ExtResource("7_wmgd5")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8o4ts"]
+render_priority = 0
+shader = ExtResource("8_oxuuo")
+shader_parameter/clip_near = 0.05
+shader_parameter/clip_far = 4000.0
+shader_parameter/radius = 0.02
+shader_parameter/bias = 0.25
 
 [node name="Node3D" type="Node3D"]
 
@@ -10,12 +66,29 @@ mesh = ExtResource("1_ah0qq")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.90187, 0.247492, -0.354087, 1.01593e-08, 0.819632, 0.57289, 0.432007, -0.516672, 0.739202, -1.12957, 5.03953, 6.58823)
+current = true
 fov = 60.0
 script = ExtResource("1_bbodk")
 look_at_position = null
 mouse_sensitivity = 0.5
 scroll_step = 0.2
 min_scroll = null
+
+[node name="NNAO" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(1, -1.49012e-08, 0, 0, 1, 2.98023e-08, 0, 0, 1, 0, -2.38419e-07, -1)
+visible = false
+extra_cull_margin = 16384.0
+ignore_occlusion_culling = true
+mesh = SubResource("QuadMesh_a37hx")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_he1gt")
+
+[node name="SSAO" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(1, -2.98023e-08, 0, 0, 1, 2.98023e-08, 0, 0, 1, -0.0363073, 0.137177, -2.05692)
+extra_cull_margin = 16384.0
+ignore_occlusion_culling = true
+mesh = SubResource("QuadMesh_a37hx")
+surface_material_override/0 = SubResource("ShaderMaterial_8o4ts")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.838585, -0.359035, 0.409718, 4.20576e-08, 0.752093, 0.659057, -0.544771, -0.552675, 0.630694, 3.10368, 4.61177, 5.57255)
