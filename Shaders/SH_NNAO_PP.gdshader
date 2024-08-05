@@ -63,13 +63,11 @@ uniform float radius = 1.0;
 uniform float cam_clip_near = 0.05;
 uniform float cam_clip_far = 4000.0;
 
-float perspective_depth(float d, float n, float f) {
-	return -((2.f * n) / d - f - n) / (f - n);
-}
-
 vec3 camera_space(vec2 uv, float depth, mat4 cam_inv_proj) {
-	vec4 position_clip = vec4(vec3(uv, perspective_depth(1.0 - depth, cam_clip_near, cam_clip_far)) * 2.0 - 1.0, 1.0);
-	vec4 position = cam_inv_proj * position_clip;
+	depth = max(depth, 1e-10);
+	vec3 ndc = vec3(uv * 2.f - vec2(1.f), 2.f * depth - 1.f);
+	vec4 position = cam_inv_proj * vec4(ndc, 1.f);
+	
 	return position.xyz / position.w;
 }
 
@@ -93,21 +91,10 @@ void vertex() {
 	POSITION = vec4(VERTEX, 1.0);
 }
 
-float sample_depth(vec2 screen_uv, mat4 inv_projection_matrix)
-{
-	float depth = texture(depth_texture, screen_uv).x;
-  	vec3 ndc = vec3(screen_uv * 2.0 - 1.0, depth);
-	vec4 view = inv_projection_matrix * vec4(ndc, 1.0);
-  	view.xyz /= view.w;
-  	return -view.z;
-	return 1.f;
-}
-
 void fragment() {
 	float depth = texture(depth_texture, SCREEN_UV).r;
 	vec3 normal = texture(normal_roughness_texture, SCREEN_UV).rgb;
-    vec4 midl = vec4(normal, depth);
-    vec3 base = camera_space(SCREEN_UV, midl.w, INV_PROJECTION_MATRIX);
+    vec3 base = camera_space(SCREEN_UV, depth, INV_PROJECTION_MATRIX);
     vec3 seed = rand(base);
 
     /* First Layer */
@@ -118,15 +105,14 @@ void fragment() {
 	for (int i = 0; i < NSAMPLES; i++) {    
 		float scale = (PI/4.f) * float(FW*FW) * ((float(i+1)/float(NSAMPLES+1))/float(NSAMPLES/2));
 		vec2 indx = spiral(float(i+1)/float(NSAMPLES+1), 2.5, 2.f*PI*seed.x);
-
   
     	vec4 next = PROJECTION_MATRIX * vec4(base + radius * (vec3(indx, 0)), 1);
     	vec3 norm = texture(normal_roughness_texture, ((next.xy / next.w)+ vec2(1.f)) / 2.f ).rgb;
-		float depth =  texture(depth_texture, ((next.xy / next.w)+ vec2(1.f)) / 2.f ).a;
+		float depth =  texture(depth_texture, ((next.xy / next.w)+ vec2(1.f)) / 2.f ).r;
     	vec3 actu = camera_space(((next.xy / next.w)+vec2(1.f))/2.f, depth, INV_PROJECTION_MATRIX);
     	vec2 fltr = (indx * (float(HW + HW) + 0.5f)) / float(HW*2+2);
     
-    	vec4 X = (1.f - clamp(length(actu - base) / radius, 0.f, 1.f)) * vec4(norm.xyz - midl.xyz, (actu.z - base.z) / radius);    
+    	vec4 X = (1.f - clamp(length(actu - base) / radius, 0.f, 1.f)) * vec4(norm.xyz - normal, (actu.z - base.z) / radius);    
 
     	H0 += scale * transpose(mat4(
       		texture(F0, fltr) * F0a + F0b, texture(F1, fltr) * F1a + F1b,

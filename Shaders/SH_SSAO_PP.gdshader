@@ -13,12 +13,6 @@ uniform float clip_far = 4000.f;
 uniform float radius = 0.01f;
 uniform float bias = 0.25f;
 
-// uniform mat4 inv_proj = mat4(
-//   vec4(-1.398332, -0.000000,  0.000000, -0.000000), 
-//   vec4(-0.000000,  0.786562, -0.000000,  0.000000), 
-//   vec4( 0.000000, -0.000000,  0.000000, -4.999500), 
-//   vec4(-0.000000,  0.000000, -1.000000,  5.000499));
-
 void vertex() {
 	POSITION = vec4(VERTEX, 1.0);
 }
@@ -33,6 +27,17 @@ vec3 camera_space(vec2 uv, float depth, mat4 cam_inv_proj) {
 
 vec3 rand(vec3 seed){
 	return 2.0 * fract(sin(dot(seed, vec3(12.9898, 78.233, 21.317))) * vec3(43758.5453, 21383.21227, 20431.20563))-1.0;
+}
+
+vec3 randomSpherePoint(vec3 rand) {
+	float ang1 = (rand.x + 1.0) * PI; // [-1..1) -> [0..2*PI)
+	float u = rand.y; // [-1..1), cos and acos(2v-1) cancel each other out, so we arrive at [-1..1)
+	float u2 = u * u;
+	float sqrt1MinusU2 = sqrt(1.0 - u2);
+	float x = sqrt1MinusU2 * cos(ang1);
+	float y = sqrt1MinusU2 * sin(ang1);
+	float z = u;
+	return vec3(x, y, z);
 }
 
 void fragment() {
@@ -65,5 +70,5 @@ void fragment() {
 		occ += float(actu.z < next.z);
 	}
 
-	ALBEDO = vec3((2.0*occ) / float(NSAMPLES) + bias);
+	ALBEDO = (vec3((2.0*occ) / float(NSAMPLES) + bias));
 }

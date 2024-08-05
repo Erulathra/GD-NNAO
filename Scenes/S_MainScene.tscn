@@ -44,8 +44,8 @@ shader_parameter/beta1 = Vector4(0.67006, 1.09048, 0.46188, 0.322837)
 shader_parameter/beta2 = Vector4(0.760696, 1.0164, 1.68699, 1.74455)
 shader_parameter/beta3 = 0.77776
 shader_parameter/radius = 1.0
-shader_parameter/cam_clip_near = 0.1
-shader_parameter/cam_clip_far = 1000.0
+shader_parameter/cam_clip_near = 0.05
+shader_parameter/cam_clip_far = 4000.0
 shader_parameter/F0 = ExtResource("4_kk2a3")
 shader_parameter/F1 = ExtResource("5_j3m0m")
 shader_parameter/F2 = ExtResource("6_u5k0x")
@@ -56,12 +56,13 @@ render_priority = 0
 shader = ExtResource("8_oxuuo")
 shader_parameter/clip_near = 0.05
 shader_parameter/clip_far = 4000.0
-shader_parameter/radius = 0.02
-shader_parameter/bias = 0.25
+shader_parameter/radius = 1.0
+shader_parameter/bias = 0.36
 
 [node name="Node3D" type="Node3D"]
 
 [node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
 mesh = ExtResource("1_ah0qq")
 
 [node name="Camera3D" type="Camera3D" parent="."]
@@ -76,7 +77,6 @@ min_scroll = null
 
 [node name="NNAO" type="MeshInstance3D" parent="Camera3D"]
 transform = Transform3D(1, -1.49012e-08, 0, 0, 1, 2.98023e-08, 0, 0, 1, 0, -2.38419e-07, -1)
-visible = false
 extra_cull_margin = 16384.0
 ignore_occlusion_culling = true
 mesh = SubResource("QuadMesh_a37hx")
@@ -85,6 +85,7 @@ surface_material_override/0 = SubResource("ShaderMaterial_he1gt")
 
 [node name="SSAO" type="MeshInstance3D" parent="Camera3D"]
 transform = Transform3D(1, -2.98023e-08, 0, 0, 1, 2.98023e-08, 0, 0, 1, -0.0363073, 0.137177, -2.05692)
+visible = false
 extra_cull_margin = 16384.0
 ignore_occlusion_culling = true
 mesh = SubResource("QuadMesh_a37hx")
